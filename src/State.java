@@ -1,6 +1,10 @@
 import java.util.Stack;
 
 public class State{
+	
+	public enum MoveDirection{
+		ROOT, UP, DOWN, LEFT, RIGHT
+	}
 
 	private int[] puzzle;
 	private int heuristic;
@@ -8,6 +12,7 @@ public class State{
 	private int col;
 	private int deep;
 	private State parent;
+	private MoveDirection moveDirection = MoveDirection.ROOT;
 
 
 	public State(int[] puzzle, int row, int col){
@@ -118,7 +123,7 @@ public class State{
 	public boolean isParentParent(){
 		boolean expand = false;
 		if(this.deep > 1){
-			if(!Util.areArraysEqual(this.parent.parent.puzzle,this.puzzle)){
+			if(!Util.isEqual(this.parent.parent.puzzle,this.puzzle)){
 				expand = true;
 			}
 		}else{
@@ -137,19 +142,19 @@ public class State{
 	 */
 
 	private State moveRight(int x, int y){		
-		return swapNodesAndCreateChild(x, y, x+1, y);
+		return swapNodesAndCreateChild(x, y, x+1, y, MoveDirection.RIGHT);
 	}
 
 	private State moveLeft(int x, int y){
-		return swapNodesAndCreateChild(x, y, x-1, y);
+		return swapNodesAndCreateChild(x, y, x-1, y, MoveDirection.LEFT);
 	}
 
 	private State moveDown(int x, int y){
-		return swapNodesAndCreateChild(x, y, x, y+1);
+		return swapNodesAndCreateChild(x, y, x, y+1, MoveDirection.DOWN);
 	}
 
 	private State moveUp(int x, int y){
-		return swapNodesAndCreateChild(x, y, x, y-1);
+		return swapNodesAndCreateChild(x, y, x, y-1, MoveDirection.UP);
 	}
 
 	private int getX(int bufferPos){
@@ -176,7 +181,7 @@ public class State{
 	}
 
 
-	private State swapNodesAndCreateChild(int fromX, int fromY, int toX, int toY){
+	private State swapNodesAndCreateChild(int fromX, int fromY, int toX, int toY, MoveDirection move){
 
 		State child = new State(this);
 		child.parent = this;
@@ -184,9 +189,10 @@ public class State{
 		int toN = child.puzzle[getPos(toX, toY)];
 		int fromN = child.puzzle[getPos(fromX, fromY)];
 
+		//swap node
 		child.puzzle[getPos(toX, toY)] = fromN;
 		child.puzzle[getPos(fromX, fromY)] = toN;
-
+		child.moveDirection = move;
 		child.heuristic = calcTotalManhattanDistance(child);
 
 		return child;
@@ -234,13 +240,17 @@ public class State{
 
 		return childHeuristic + state.deep;
 	}
-
-	/*
-	 implements Comparable<State> 
-	@Override
-	public int compareTo(State o) {
-		return Integer.compare(this.getHeuristic(), o.getHeuristic());
+	
+	public MoveDirection getMoveDirection() {
+		return this.moveDirection;
 	}
-	 */
+	
+	public int[] getPuzzle() {
+		return this.puzzle;
+	}
+	
+	public State getParent() {
+		return this.parent;
+	}
 
 }

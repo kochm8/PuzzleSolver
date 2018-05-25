@@ -2,7 +2,7 @@
 public class Util {
 
 	
-	public static boolean areArraysEqual(int[] a, int[] b){
+	public static boolean isEqual(int[] a, int[] b){
 
 		boolean isEqual = true;
 
